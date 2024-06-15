@@ -7,8 +7,12 @@ environment:
   sdk: '>=3.4.3 <4.0.0'
 
 dependencies:
+  another_flutter_splash_screen: ^1.2.0
   flutter:
     sdk: flutter
+  intro_views_flutter: ^3.2.0
+  flutter_launcher_icons: ^0.13.1
+  extended_image: ^8.2.1
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +21,16 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/jamia1_1.jpeg
+    - assets/images/jamia2.jpeg
+    - assets/images/jamia1.png
+    - assets/images/splash.jpeg
+    - assets/images/logo.png
+
+flutter_icons:
+  android: true
+  image_path: "assets/images/logo.png"
+  adaptive_icon_foreground: "assets/images/logo.png"
+  adaptive_icon_background: "#ffffff"
