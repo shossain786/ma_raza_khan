@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ma_raza_khan/screens/class_room.dart';
+import 'package:ma_raza_khan/screens/create_classroom.dart';
 import 'package:ma_raza_khan/widgets/my_appdrawer.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -57,7 +58,14 @@ class HomeScreen extends StatelessWidget {
                       icon: const Icon(Icons.calendar_month),
                     ),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CreateClassScreen(),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.add),
                     )
                   ],
