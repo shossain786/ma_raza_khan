@@ -1,20 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ma_raza_khan/screens/class_room.dart';
 import 'package:ma_raza_khan/widgets/my_appdrawer.dart';
-
-// void main() {
-//   runApp(const MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const MaterialApp(
-//       home: HomeScreen(),
-//     );
-//   }
-// }
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -23,10 +9,18 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('M.A RAZA KHAN'),
+        title: const Text('Your Classrooms'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Icons.help),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.chat_bubble),
             onPressed: () {},
           ),
         ],
@@ -34,90 +28,130 @@ class HomeScreen extends StatelessWidget {
       drawer: myAppDrawer(),
       body: Column(
         children: [
-          Padding(
+          Container(
+            color: Colors.blueGrey[900],
+            width: double.infinity,
+            height: 120,
             padding: const EdgeInsets.all(16.0),
-            child: Card(
-              elevation: 4,
-              child: ListTile(
-                title: const Text('Study Material Manager'),
-                subtitle: const Text('Upload and manage study material.'),
-                trailing: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Upload'),
-                ),
-                leading: Image.network(
-                    'https://via.placeholder.com/150'), // Replace with actual image
-              ),
+            child: const Column(
+              children: [
+                Icon(Icons.task, size: 50, color: Colors.white),
+                SizedBox(height: 8),
+                Text('No upcoming task', style: TextStyle(color: Colors.white)),
+              ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.all(8.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Overview',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const Spacer(),
-                const Text('ID: 6608153922'),
-                IconButton(
-                  icon: const Icon(Icons.share),
-                  onPressed: () {},
+                const Text(
+                  'Your Classrooms',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.calendar_month),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.add),
+                    )
+                  ],
+                )
               ],
             ),
           ),
           Expanded(
-            child: GridView.count(
-              crossAxisCount: 3,
+            child: ListView(
               children: const [
-                GridItem(icon: Icons.play_circle_fill, label: 'Live Class'),
-                GridItem(icon: Icons.article, label: 'Test'),
-                GridItem(icon: Icons.menu_book, label: 'Study Material'),
-                GridItem(icon: Icons.chat, label: 'Chat'),
-                GridItem(icon: Icons.assignment, label: 'Assignment'),
-                GridItem(icon: Icons.attach_money, label: 'Fee'),
-                GridItem(icon: Icons.poll, label: 'Poll'),
-                GridItem(icon: Icons.fiber_manual_record, label: 'Recording'),
-                GridItem(icon: Icons.support, label: 'Support'),
-                GridItem(icon: Icons.calendar_today, label: 'Attendance'),
+                ClassroomCard(
+                  title: 'Ilm e Fiqah Saniya',
+                  subtitle: 'Fiqah',
+                  schedule: 'Mon Tue',
+                  students: 30,
+                ),
+                ClassroomCard(
+                  title: 'Tajweed Ula',
+                  subtitle: 'Marifati Tajweed',
+                  schedule: 'Mon Tue',
+                  students: 30,
+                ),
+                ClassroomCard(
+                  title: 'Ilm e Nahw Saniya',
+                  subtitle: 'Nahw',
+                  schedule: 'Fri Sat',
+                  students: 30,
+                ),
               ],
             ),
           ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.group), label: 'Students/Co-Teachers'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Premium'),
         ],
       ),
     );
   }
 }
 
-class GridItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
+class ClassroomCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String schedule;
+  final int students;
 
-  const GridItem({super.key, required this.icon, required this.label});
+  const ClassroomCard({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.schedule,
+    required this.students,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(8),
-      child: InkWell(
-        onTap: () {},
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: ListTile(
+        title: Text(title),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 50),
-            const SizedBox(height: 8),
-            Text(label, textAlign: TextAlign.center),
+            Text(subtitle),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(Icons.calendar_view_week, size: 14),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(schedule),
+                      const SizedBox(),
+                      Text(
+                        '$students Students',
+                        style: const TextStyle(color: Colors.orange),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ],
         ),
+        trailing: const Icon(
+          Icons.arrow_right_alt,
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ClassroomScreen(),
+            ),
+          );
+        },
       ),
     );
   }
