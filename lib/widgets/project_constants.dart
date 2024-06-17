@@ -8,3 +8,4 @@ Color classRoomIteamsBackgroundColor = const Color.fromARGB(255, 22, 34, 44);
 Color snackSuccessBGColor = const Color.fromARGB(255, 94, 169, 231);
 Color snackUnSuccessBGColor = const Color.fromARGB(255, 238, 41, 41);
 Color snackSuccessTextColor = const Color.fromARGB(255, 6, 12, 18);
+Color bottomSheetBGColor = const Color.fromARGB(255, 22, 34, 44);
