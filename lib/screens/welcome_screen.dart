@@ -2,13 +2,14 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:ma_raza_khan/screens/home_screen.dart';
+import 'package:ma_raza_khan/widgets/project_constants.dart' as pc;
 
 class WelcomeScreen extends StatelessWidget {
   WelcomeScreen({super.key});
 
   final pages = [
     PageViewModel(
-      pageColor: const Color(0xFF03A9F4),
+      pageColor: pc.welcomeScreen1BGColor,
       bubble: Image.asset('assets/images/jamia1.png'),
       body: const Text(
         'Madrassa Building View, a buitiful and place in the world.',
@@ -47,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
       ),
     ),
     PageViewModel(
-      pageColor: const Color(0xFF8BC34A),
+      pageColor: pc.welcomeScreen2BGColor,
       iconImageAssetPath: 'assets/images/jamia2.jpeg',
       body: const Text(
         'A beautiful hostel campus for talib e elm',

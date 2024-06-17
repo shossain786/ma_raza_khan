@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:ma_raza_khan/project_constants.dart';
+import 'package:ma_raza_khan/widgets/my_scaffold_msg.dart' as sc;
+import 'package:ma_raza_khan/widgets/project_constants.dart';
 
 class CreateClassScreen extends StatefulWidget {
   const CreateClassScreen({super.key});
@@ -12,6 +15,7 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
   final _formKey = GlobalKey<FormState>();
   final _classNameController = TextEditingController();
   final _subjectNameController = TextEditingController();
+  late String classRoomId;
 
   @override
   void dispose() {
@@ -26,13 +30,28 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
     );
     String className = _classNameController.text.trim();
     String subject = _subjectNameController.text.trim();
+    classRoomId = generateRandomClassroomId();
     if (className.isNotEmpty) {
       debugPrint('Class Name: $className');
       debugPrint('Subject Name: $subject');
 
+      sc.showSuccessMessage(context,
+          'Class room created sussessfully! Classroom id: $classRoomId');
+
       _classNameController.clear();
       _subjectNameController.clear();
+    } else {
+      sc.showUnSuccessMessage(
+          context, 'Class not created. Please virify entered details');
     }
+  }
+
+  String generateRandomClassroomId() {
+    Random random = Random();
+    int min = 10000000;
+    int max = 99999999;
+    int randomNumber = min + random.nextInt(max - min + 1);
+    return randomNumber.toString();
   }
 
   @override

@@ -1,7 +1,22 @@
 import 'package:flutter/material.dart';
 
-class ClassroomScreen extends StatelessWidget {
+import '../widgets/project_constants.dart';
+
+class ClassroomScreen extends StatefulWidget {
   const ClassroomScreen({super.key});
+
+  @override
+  State<ClassroomScreen> createState() => _ClassroomScreenState();
+}
+
+class _ClassroomScreenState extends State<ClassroomScreen> {
+  late int studentCount;
+
+  @override
+  void initState() {
+    studentCount = 31;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,60 +39,162 @@ class ClassroomScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.elliptical(30, 30),
                 bottomRight: Radius.elliptical(30, 30),
               ),
-              color: Colors.blue,
+              color: classRoomIteamsBackgroundColor,
             ),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    const CircleAvatar(
-                      backgroundColor: Colors.red,
-                      child: Text('M', style: TextStyle(color: Colors.white)),
-                    ),
-                    const SizedBox(width: 8),
-                    const CircleAvatar(
-                      backgroundColor: Colors.orange,
-                      child: Text('S', style: TextStyle(color: Colors.white)),
-                    ),
-                    const SizedBox(width: 8),
-                    const CircleAvatar(
-                      backgroundColor: Colors.blue,
-                      child: Text('+1', style: TextStyle(color: Colors.white)),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        '+ Invite',
-                        style: TextStyle(color: Colors.blue),
+                Container(
+                  padding: const EdgeInsets.only(left: 6, right: 6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.blueGrey,
+                  ),
+                  child: Row(
+                    children: [
+                      const CircleAvatar(
+                        backgroundColor: Colors.red,
+                        child: Text('M', style: TextStyle(color: Colors.white)),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 2),
+                      const CircleAvatar(
+                        backgroundColor: Colors.orange,
+                        child: Text('S', style: TextStyle(color: Colors.white)),
+                      ),
+                      const SizedBox(width: 2),
+                      CircleAvatar(
+                        backgroundColor: Colors.blue,
+                        child: Text(
+                          '+$studentCount',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          '+ Invite',
+                          style: TextStyle(color: Colors.lightBlueAccent),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 GridView.count(
                   crossAxisCount: 4,
                   shrinkWrap: true,
                   children: const [
-                    ClassroomFeature(
-                        icon: Icons.calendar_today, label: 'Attendance'),
-                    ClassroomFeature(icon: Icons.schedule, label: 'Timetable'),
-                    ClassroomFeature(
-                        icon: Icons.notifications, label: 'Notice Board'),
-                    ClassroomFeature(icon: Icons.chat, label: 'Chat'),
-                    ClassroomFeature(icon: Icons.book, label: 'Homeworks'),
-                    ClassroomFeature(
-                        icon: Icons.folder, label: 'Study Materials'),
-                    ClassroomFeature(icon: Icons.assignment, label: 'Tests'),
-                    ClassroomFeature(
-                        icon: Icons.video_collection_outlined,
-                        label: 'Recordings'),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.calendar_month,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Attendance',
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.schedule_rounded,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'TimeTabel',
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.notifications_none_rounded,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Notice Board',
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.chat_rounded,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Chat',
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.note_rounded,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Home Works',
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.folder_rounded,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Study Materials',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.assignment_rounded,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Tests',
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.video_collection_rounded,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Recordings',
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
                   ],
                 ),
               ],
@@ -87,8 +204,13 @@ class ClassroomScreen extends StatelessWidget {
             padding: EdgeInsets.all(8.0),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text('Lessons',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              child: Text(
+                'Lessons',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
           const Padding(
@@ -152,36 +274,6 @@ class ClassroomScreen extends StatelessWidget {
         label: const Text('Go Live'),
         icon: const Icon(Icons.live_tv),
         backgroundColor: Colors.orange,
-      ),
-    );
-  }
-}
-
-class ClassroomFeature extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const ClassroomFeature({super.key, required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white),
-          color: Colors.white54,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 30, color: Colors.blueGrey[700]),
-            const SizedBox(height: 8),
-            Text(label,
-                style: TextStyle(color: Colors.blueGrey[700], fontSize: 12)),
-          ],
-        ),
       ),
     );
   }

@@ -130,7 +130,7 @@ class ClassroomCard extends StatelessWidget {
             const SizedBox(height: 4),
             Row(
               children: [
-                const Icon(Icons.calendar_view_week, size: 14),
+                const Icon(Icons.calendar_month, size: 14),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Row(
