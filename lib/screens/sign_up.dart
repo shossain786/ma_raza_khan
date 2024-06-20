@@ -1,56 +1,50 @@
-// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously, unused_local_variable
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ma_raza_khan/screens/home_screen.dart';
-import 'package:ma_raza_khan/screens/sign_up.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ma_raza_khan/widgets/my_scaffold_msg.dart';
+import 'login_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _selectedRole = 'Student';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> _login() async {
+  Future<void> _signUp() async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: _usernameController.text,
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
         password: _passwordController.text,
       );
-      // Check the role (you should have a way to check the role, maybe from Firestore)
-      DocumentSnapshot userDoc = await _firestore
-          .collection('users')
-          .doc(userCredential.user?.uid)
-          .get();
-      String fullName = userDoc['full_name'];
-      String email = userDoc['email'];
-      String userRole = userDoc['role'];
 
-      if (userRole == _selectedRole) {
-        debugPrint("Logged in as $_selectedRole");
+      // Save the role in Firestore
+      await _firestore.collection('users').doc(userCredential.user?.uid).set({
+        'full_name': _fullNameController.text,
+        'email': _emailController.text,
+        'role': _selectedRole,
+      });
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (_) => HomeScreen(emailId: email, fullName: fullName)),
-        );
-      } else {
-        showUnSuccessMessage(
-            context, 'You do not have access as role: $_selectedRole');
-        await _auth.signOut();
-      }
-    } on FirebaseAuthException catch (error) {
-      showUnSuccessMessage(context, error.email ?? 'Authentication failed!!');
+      showSuccessMessage(context, 'Registration successful!');
+
+      // Navigate to login screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    } catch (e) {
+      showUnSuccessMessage(context, 'Signup failed: $e');
+      // Show error message
     }
   }
 
@@ -74,21 +68,29 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.blue,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
                 const Text(
-                  'LOGIN',
+                  'SIGN UP',
                   style: TextStyle(
-                    fontSize: 34,
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
                   ),
                 ),
                 const SizedBox(height: 20),
                 TextField(
-                  controller: _usernameController,
+                  controller: _fullNameController,
                   decoration: const InputDecoration(
-                    labelText: 'Username',
-                    hintText: 'hamid@email.com',
+                    labelText: 'Full Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'example@email.com',
                     border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -128,35 +130,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Text('Teacher'),
                   ],
                 ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    debugPrint('Pressed on forgot password');
-                  },
-                  child: const Text('Forgot your password?'),
-                ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    debugPrint('Pressed on Login Button');
-                    _login();
-                  },
+                  onPressed: _signUp,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     minimumSize: const Size(double.infinity, 50),
                   ),
-                  child: const Text('LOGIN'),
+                  child: const Text('SIGN UP'),
                 ),
                 const SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SignUpScreen(),
-                      ),
-                    );
+                    Navigator.of(context).pop();
                   },
-                  child: const Text('Don\'t have an account? Sign up'),
+                  child: const Text('Already have an account? Login'),
                 ),
               ],
             ),

@@ -1,10 +1,14 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:ma_raza_khan/screens/class_room.dart';
 import 'package:ma_raza_khan/screens/create_classroom.dart';
 import 'package:ma_raza_khan/widgets/my_appdrawer.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  String fullName;
+  String emailId;
+  HomeScreen({super.key, required this.fullName, required this.emailId});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +30,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(email: emailId, fullName: fullName),
       body: Column(
         children: [
           Container(
