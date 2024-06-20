@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "470395157498",
+    "project_id": "makhan-9cb44",
+    "storage_bucket": "makhan-9cb44.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:470395157498:android:47f0f749b4b87367bc8243",
+        "android_client_info": {
+          "package_name": "com.example.ma_raza_khan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIGDC-hf_MVXGCCSY2KbgJiwvflOP3SCA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

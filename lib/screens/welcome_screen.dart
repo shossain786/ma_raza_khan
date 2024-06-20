@@ -1,7 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
-import 'package:ma_raza_khan/screens/home_screen.dart';
+import 'package:ma_raza_khan/screens/login_screen.dart';
 import 'package:ma_raza_khan/widgets/project_constants.dart' as pc;
 
 class WelcomeScreen extends StatelessWidget {
@@ -99,7 +99,7 @@ class WelcomeScreen extends StatelessWidget {
         onTapDoneButton: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
           );
         },
         pageButtonTextStyles: const TextStyle(

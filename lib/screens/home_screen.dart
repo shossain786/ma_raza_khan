@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      drawer: myAppDrawer(),
+      drawer: const AppDrawer(),
       body: Column(
         children: [
           Container(

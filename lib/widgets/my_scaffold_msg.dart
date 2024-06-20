@@ -22,7 +22,7 @@ showUnSuccessMessage(BuildContext context, String message) {
     SnackBar(
       content: Text(
         message,
-        style: TextStyle(color: snackSuccessTextColor),
+        style: TextStyle(color: snackUnSuccessTextColor),
       ),
       backgroundColor: snackUnSuccessBGColor,
       showCloseIcon: true,
