@@ -98,7 +98,9 @@ class HomeScreen extends StatelessWidget {
                 return ListView(
                   children: snapshot.data!.docs.map((doc) {
                     var data = doc.data() as Map<String, dynamic>;
+                    var classId = doc.id;
                     return ClassroomCard(
+                      classId: classId,
                       title: data['className'] ?? 'No Title',
                       subtitle: data['subject'] ?? 'No Subject',
                       schedule: 'N/A',
@@ -116,6 +118,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 class ClassroomCard extends StatelessWidget {
+  final String classId;
   final String title;
   final String subtitle;
   final String schedule;
@@ -123,6 +126,7 @@ class ClassroomCard extends StatelessWidget {
 
   const ClassroomCard({
     super.key,
+    required this.classId,
     required this.title,
     required this.subtitle,
     required this.schedule,
@@ -168,7 +172,7 @@ class ClassroomCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const ClassroomScreen(),
+              builder: (context) => ClassroomScreen(classId: classId),
             ),
           );
         },

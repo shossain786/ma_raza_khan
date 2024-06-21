@@ -1,10 +1,14 @@
+import 'dart:ui';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ma_raza_khan/widgets/class_top_items.dart';
 
 import '../widgets/project_constants.dart' as pc;
 
 class ClassroomScreen extends StatefulWidget {
-  const ClassroomScreen({super.key});
+  final String classId;
+  const ClassroomScreen({super.key, required this.classId});
 
   @override
   State<ClassroomScreen> createState() => _ClassroomScreenState();
@@ -13,12 +17,24 @@ class ClassroomScreen extends StatefulWidget {
 class _ClassroomScreenState extends State<ClassroomScreen> {
   late int studentCount;
   bool topicDone = false;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     studentCount = 31;
     super.initState();
   }
+
+  Future<void> _editClassroom() async {}
+
+  Future<void> _deleteClassroom() async {
+    await _firestore.collection('classes').doc(widget.classId).delete();
+    Navigator.pop(context);
+  }
+
+  Future<void> _archiveClassroom() async {}
+
+  Future<void> _classroomSettings() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +48,60 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
           },
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              switch (value) {
+                case 'edit':
+                  _editClassroom();
+                  break;
+                case 'delete':
+                  _deleteClassroom();
+                  break;
+                case 'archive':
+                  _archiveClassroom();
+                  break;
+                case 'settings':
+                  _classroomSettings();
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                const PopupMenuItem(
+                  value: 'edit',
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit_rounded),
+                      Text('Edit Classroom'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                    value: 'archive',
+                    child: Row(
+                      children: [
+                        Icon(Icons.archive_rounded),
+                        Text('Archive Classroom'),
+                      ],
+                    )),
+                const PopupMenuItem(
+                    value: 'settings',
+                    child: Row(
+                      children: [
+                        Icon(Icons.settings_rounded),
+                        Text('Settings'),
+                      ],
+                    )),
+                const PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_rounded),
+                        Text('Delete Classroom'),
+                      ],
+                    )),
+              ];
+            },
           ),
         ],
       ),
@@ -165,12 +232,19 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                  color: Colors.blueGrey,
-                ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
+                    // color: Color.fromARGB(255, 169, 223, 253),
+                    // color:
+                    gradient: LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 47, 159, 187),
+                        Color.fromARGB(169, 172, 88, 88),
+                        Color.fromARGB(115, 136, 91, 91),
+                      ],
+                    )),
                 child: ListView.builder(
                   controller: scrollController,
                   itemCount: 25,
@@ -192,7 +266,6 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                     );
                   },
                 ),
-                
               );
             },
           ),

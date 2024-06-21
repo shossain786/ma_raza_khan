@@ -59,10 +59,9 @@ class AppDrawer extends StatelessWidget {
                       Navigator.of(context).pop();
                     },
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                    child: Divider(height: 1, color: drawerDividerColor),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    // child: Divider(height: 1, color: drawerDividerColor),
                   ),
                   ListTile(
                     leading: const Icon(Icons.settings),
