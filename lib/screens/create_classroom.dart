@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ma_raza_khan/widgets/my_scaffold_msg.dart' as sc;
 import 'package:ma_raza_khan/widgets/project_constants.dart';
@@ -16,6 +19,7 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
   final _classNameController = TextEditingController();
   final _subjectNameController = TextEditingController();
   late String classRoomId;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   @override
   void dispose() {
@@ -24,16 +28,16 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
     super.dispose();
   }
 
-  void _createClassroom() {
-    debugPrint(
-      'Data received: ${_classNameController.text} and ${_subjectNameController.text}',
-    );
+  Future<void> _createClassroom() async {
     String className = _classNameController.text.trim();
     String subject = _subjectNameController.text.trim();
     classRoomId = generateRandomClassroomId();
     if (className.isNotEmpty) {
       debugPrint('Class Name: $className');
       debugPrint('Subject Name: $subject');
+
+      await _firebaseFirestore.collection("classes").doc().set(
+          {"className": className, "subject": subject, "classId": classRoomId});
 
       sc.showSuccessMessage(context,
           'Class room created sussessfully! Classroom id: $classRoomId');

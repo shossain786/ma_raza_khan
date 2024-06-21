@@ -10,4 +10,5 @@ Color snackUnSuccessBGColor = const Color.fromARGB(255, 238, 41, 41);
 Color snackSuccessTextColor = const Color.fromARGB(255, 6, 12, 18);
 Color snackUnSuccessTextColor = Colors.white;
 Color bottomSheetBGColor = const Color.fromARGB(255, 22, 34, 44);
-Color drawerOnSelectedColor = const Color.fromARGB(255, 112, 119, 125);
+Color drawerOnSelectedColor = const Color.fromARGB(255, 196, 199, 201);
+Color drawerDividerColor = const Color.fromARGB(255, 1, 15, 23);

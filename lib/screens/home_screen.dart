@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ma_raza_khan/screens/class_room.dart';
 import 'package:ma_raza_khan/screens/create_classroom.dart';
@@ -9,6 +10,8 @@ class HomeScreen extends StatelessWidget {
   String fullName;
   String emailId;
   HomeScreen({super.key, required this.fullName, required this.emailId});
+
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -78,27 +81,32 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView(
-              children: const [
-                ClassroomCard(
-                  title: 'Ilm e Fiqah Saniya',
-                  subtitle: 'Fiqah',
-                  schedule: 'Mon Tue',
-                  students: 30,
-                ),
-                ClassroomCard(
-                  title: 'Tajweed Ula',
-                  subtitle: 'Marifati Tajweed',
-                  schedule: 'Mon Tue',
-                  students: 30,
-                ),
-                ClassroomCard(
-                  title: 'Ilm e Nahw Saniya',
-                  subtitle: 'Nahw',
-                  schedule: 'Fri Sat',
-                  students: 30,
-                ),
-              ],
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _firebaseFirestore.collection("classes").snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading classrooms'));
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text('No classrooms available'));
+                }
+                return ListView(
+                  children: snapshot.data!.docs.map((doc) {
+                    var data = doc.data() as Map<String, dynamic>;
+                    return ClassroomCard(
+                      title: data['className'] ?? 'No Title',
+                      subtitle: data['subject'] ?? 'No Subject',
+                      schedule: 'N/A',
+                      students: 0,
+                    );
+                  }).toList(),
+                );
+              },
             ),
           ),
         ],
