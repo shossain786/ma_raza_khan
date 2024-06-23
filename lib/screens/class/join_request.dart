@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ma_raza_khan/screens/login_screen.dart';
+import 'package:ma_raza_khan/widgets/my_scaffold_msg.dart';
 
 class JoinClassScreen extends StatefulWidget {
   const JoinClassScreen({super.key});
@@ -24,19 +25,15 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
           'timestamp': FieldValue.serverTimestamp(),
           'email': loggedInUserEmail,
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Join request sent successfully')),
-        );
+        showSuccessMessage(context, 'Join request sent successfully');
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send join request: $e')),
-        );
+        showUnSuccessMessage(context, 'Failed to send join request: $e');
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter both class ID and name')),
-      );
+      showUnSuccessMessage(context, 'Please enter both class ID');
     }
+    _classIdController.clear();
+    Navigator.pop(context);
   }
 
   @override

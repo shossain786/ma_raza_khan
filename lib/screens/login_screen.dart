@@ -29,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool passwordVisible = true;
+  bool _isAuthenticating = false;
 
   Future<void> _login() async {
     try {
@@ -57,6 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         loggedInUserFullName = fullName;
+        setState(() {
+          _isAuthenticating = true;
+        });
 
         Navigator.push(
           context,
@@ -172,17 +176,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text('Forgot your password?'),
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      debugPrint('Pressed on Login Button');
-                      _login();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      minimumSize: const Size(double.infinity, 50),
+                  if (_isAuthenticating) const CircularProgressIndicator(),
+                  if (!_isAuthenticating)
+                    ElevatedButton(
+                      onPressed: () {
+                        debugPrint('Pressed on Login Button');
+                        _login();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      child: const Text('LOGIN'),
                     ),
-                    child: const Text('LOGIN'),
-                  ),
                   const SizedBox(height: 10),
                   TextButton(
                     onPressed: () {
