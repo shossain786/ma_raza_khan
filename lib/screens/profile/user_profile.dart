@@ -72,21 +72,43 @@ class MyContainer {
   Container menuContainer(String title, String name) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: drawerOnSelectedColor,
-      ),
+          borderRadius: BorderRadius.circular(10),
+          color: drawerOnSelectedColor,
+          border: Border.all(width: 1, color: welcomeScreen1BGColor),
+          gradient: const LinearGradient(colors: [
+            Color.fromARGB(255, 113, 185, 244),
+            Color.fromARGB(255, 183, 216, 245),
+            Color.fromARGB(255, 125, 192, 247)
+          ]),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.blue,
+            ),
+            BoxShadow(
+              color: Colors.red,
+            ),
+          ]),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
             Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
-            const Spacer(),
-            Text(
-              name,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                name,
+                softWrap: true,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
             )
           ],
         ),
