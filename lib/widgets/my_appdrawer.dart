@@ -7,9 +7,7 @@ import 'package:ma_raza_khan/widgets/project_constants.dart';
 import '../screens/login_screen.dart';
 
 class AppDrawer extends StatelessWidget {
-  final String fullName;
-  final String email;
-  const AppDrawer({super.key, required this.fullName, required this.email});
+  const AppDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +16,11 @@ class AppDrawer extends StatelessWidget {
         children: [
           UserAccountsDrawerHeader(
             accountName: Text(
-              fullName,
+              loggedInUserFullName,
               style: const TextStyle(fontSize: 20),
             ),
             accountEmail: Text(
-              email,
+              loggedInUserEmail,
               style: const TextStyle(fontSize: 14),
             ),
             currentAccountPicture: const CircleAvatar(
@@ -46,6 +44,7 @@ class AppDrawer extends StatelessWidget {
                       Navigator.of(context).pop();
                     },
                   ),
+                  const Divider(height: 2),
                   ListTile(
                     leading: const Icon(Icons.info),
                     title: const Text('Profile'),
@@ -58,6 +57,7 @@ class AppDrawer extends StatelessWidget {
                       );
                     },
                   ),
+                  const Divider(height: 2),
                   ListTile(
                     leading: const Icon(Icons.person),
                     title: const Text('Students/Co-Teachers'),
@@ -67,7 +67,6 @@ class AppDrawer extends StatelessWidget {
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                    // child: Divider(height: 1, color: drawerDividerColor),
                   ),
                   ListTile(
                     leading: const Icon(Icons.settings),
@@ -76,6 +75,7 @@ class AppDrawer extends StatelessWidget {
                       Navigator.of(context).pop();
                     },
                   ),
+                  const Divider(height: 2),
                   ListTile(
                     leading: const Icon(Icons.contact_support),
                     title: const Text('About US'),
@@ -83,6 +83,7 @@ class AppDrawer extends StatelessWidget {
                       Navigator.of(context).pop();
                     },
                   ),
+                  const Divider(height: 2),
                   ListTile(
                     leading: const Icon(Icons.logout),
                     title: const Text('Logout'),

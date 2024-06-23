@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      drawer: AppDrawer(email: emailId, fullName: fullName),
+      drawer: const AppDrawer(),
       body: Column(
         children: [
           Container(

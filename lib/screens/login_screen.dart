@@ -7,6 +7,8 @@ import 'package:ma_raza_khan/screens/home_screen.dart';
 import 'package:ma_raza_khan/screens/sign_up.dart';
 import 'package:ma_raza_khan/widgets/my_scaffold_msg.dart';
 
+import '../widgets/project_constants.dart';
+
 late String loggedInUserType;
 late String loggedInUserFullName;
 late String loggedInUserEmail;
@@ -26,6 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _selectedRole = 'Student';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool passwordVisible = true;
 
   Future<void> _login() async {
     try {
@@ -113,11 +116,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 10),
                   TextField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Password',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            passwordVisible = !passwordVisible;
+                          });
+                        },
+                        color: classRoomIteamsBackgroundColor,
+                        icon: passwordVisible
+                            ? const Icon(Icons.visibility_off)
+                            : const Icon(Icons.visibility),
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: passwordVisible,
                   ),
                   const SizedBox(height: 20),
                   Row(
