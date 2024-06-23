@@ -1,9 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ma_raza_khan/screens/login_screen.dart';
 import 'package:ma_raza_khan/widgets/class_top_items.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../widgets/project_constants.dart' as pc;
+import 'class/approve_request.dart';
 
 class ClassroomScreen extends StatefulWidget {
   final String classId;
@@ -27,6 +32,20 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
   void initState() {
     studentCount = 31;
     super.initState();
+  }
+
+  Future<void> _shareClassroomId() async {
+    final classId = widget.classId;
+    final message = 'Join my class with this ID: $classId';
+    Share.share(message);
+  }
+
+  Future<void> _copyClassroomIdToClipboard() async {
+    final classId = widget.classId;
+    await Clipboard.setData(ClipboardData(text: classId));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Classroom ID copied to clipboard')),
+    );
   }
 
   Future<void> _editClassroom() async {}
@@ -130,7 +149,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                       padding: const EdgeInsets.only(left: 6, right: 6),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Colors.blueGrey,
+                        color: const Color.fromARGB(255, 156, 190, 206),
                       ),
                       child: Row(
                         children: [
@@ -154,13 +173,44 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                             ),
                           ),
                           const Spacer(),
+                          IconButton(
+                            highlightColor: Colors.white,
+                            icon: const Icon(
+                              Icons.copy_rounded,
+                              color: Color.fromARGB(255, 2, 37, 65),
+                            ),
+                            onPressed: _copyClassroomIdToClipboard,
+                          ),
                           TextButton(
                             onPressed: () {},
-                            child: const Text(
-                              '+ Invite',
-                              style: TextStyle(color: Colors.lightBlueAccent),
+                            child: IconButton(
+                              onPressed: _shareClassroomId,
+                              highlightColor: Colors.white,
+                              icon: const Icon(
+                                Icons.add_circle,
+                                color: Color.fromARGB(255, 2, 37, 65),
+                              ),
                             ),
                           ),
+                          loggedInUserType == 'Teacher'
+                              ? IconButton(
+                                  highlightColor: Colors.white,
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ApproveRequestsScreen(
+                                                classId: widget.classId),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.check_circle_outline,
+                                    color: Color.fromARGB(255, 47, 102, 49),
+                                  ),
+                                )
+                              : const Text(''),
                         ],
                       ),
                     ),
@@ -174,7 +224,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'About Me',
+                    'About Teacher',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

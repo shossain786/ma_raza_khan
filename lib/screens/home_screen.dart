@@ -4,7 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ma_raza_khan/screens/class_room.dart';
 import 'package:ma_raza_khan/screens/create_classroom.dart';
+import 'package:ma_raza_khan/screens/login_screen.dart';
 import 'package:ma_raza_khan/widgets/my_appdrawer.dart';
+
+import 'class/join_request.dart';
 
 class HomeScreen extends StatelessWidget {
   String fullName;
@@ -66,12 +69,21 @@ class HomeScreen extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CreateClassScreen(),
-                          ),
-                        );
+                        if (loggedInUserType == 'Teacher') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CreateClassScreen(),
+                            ),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const JoinClassScreen(),
+                            ),
+                          );
+                        }
                       },
                       icon: const Icon(Icons.add),
                     )
