@@ -27,6 +27,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
   late int studentCount;
   bool topicDone = false;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool isStudent = loggedInUserType == 'Student' ? true : false;
 
   @override
   void initState() {
@@ -73,60 +74,63 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
           },
         ),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              switch (value) {
-                case 'edit':
-                  _editClassroom();
-                  break;
-                case 'delete':
-                  _deleteClassroom();
-                  break;
-                case 'archive':
-                  _archiveClassroom();
-                  break;
-                case 'settings':
-                  _classroomSettings();
-                  break;
-              }
-            },
-            itemBuilder: (context) {
-              return [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit_rounded),
-                      Text('Edit Classroom'),
-                    ],
+          Visibility(
+            visible: !isStudent,
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                switch (value) {
+                  case 'edit':
+                    _editClassroom();
+                    break;
+                  case 'delete':
+                    _deleteClassroom();
+                    break;
+                  case 'archive':
+                    _archiveClassroom();
+                    break;
+                  case 'settings':
+                    _classroomSettings();
+                    break;
+                }
+              },
+              itemBuilder: (context) {
+                return [
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit_rounded),
+                        Text('Edit Classroom'),
+                      ],
+                    ),
                   ),
-                ),
-                const PopupMenuItem(
-                    value: 'archive',
-                    child: Row(
-                      children: [
-                        Icon(Icons.archive_rounded),
-                        Text('Archive Classroom'),
-                      ],
-                    )),
-                const PopupMenuItem(
-                    value: 'settings',
-                    child: Row(
-                      children: [
-                        Icon(Icons.settings_rounded),
-                        Text('Settings'),
-                      ],
-                    )),
-                const PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete_rounded),
-                        Text('Delete Classroom'),
-                      ],
-                    )),
-              ];
-            },
+                  const PopupMenuItem(
+                      value: 'archive',
+                      child: Row(
+                        children: [
+                          Icon(Icons.archive_rounded),
+                          Text('Archive Classroom'),
+                        ],
+                      )),
+                  const PopupMenuItem(
+                      value: 'settings',
+                      child: Row(
+                        children: [
+                          Icon(Icons.settings_rounded),
+                          Text('Settings'),
+                        ],
+                      )),
+                  const PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete_rounded),
+                          Text('Delete Classroom'),
+                        ],
+                      )),
+                ];
+              },
+            ),
           ),
         ],
       ),
@@ -327,8 +331,8 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
-        label: const Text('Go Live'),
-        icon: const Icon(Icons.live_tv),
+        label: isStudent ? const Text('Join Live') : const Text('Go Live'),
+        icon: const Icon(Icons.live_tv_rounded),
         backgroundColor: Colors.orange,
       ),
     );

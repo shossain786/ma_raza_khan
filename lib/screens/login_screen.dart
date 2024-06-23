@@ -61,7 +61,12 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) => HomeScreen(emailId: email, fullName: fullName)),
+            builder: (_) => HomeScreen(
+              emailId: email,
+              fullName: fullName,
+              userId: loggedInUserID,
+            ),
+          ),
         );
       } else {
         showUnSuccessMessage(

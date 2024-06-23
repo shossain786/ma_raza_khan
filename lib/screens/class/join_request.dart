@@ -1,7 +1,8 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ma_raza_khan/screens/login_screen.dart';
 
 class JoinClassScreen extends StatefulWidget {
   const JoinClassScreen({super.key});
@@ -17,14 +18,21 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
 
   Future<void> _sendJoinRequest() async {
     if (_classIdController.text.isNotEmpty && _nameController.text.isNotEmpty) {
-      await _firestore.collection('join_requests').add({
-        'classId': _classIdController.text,
-        'name': _nameController.text,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Join request sent successfully')),
-      );
+      try {
+        await _firestore.collection('join_requests').add({
+          'classId': _classIdController.text,
+          'name': _nameController.text,
+          'timestamp': FieldValue.serverTimestamp(),
+          'email': loggedInUserEmail,
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Join request sent successfully')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send join request: $e')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter both class ID and name')),

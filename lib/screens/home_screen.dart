@@ -1,18 +1,22 @@
-// ignore_for_file: must_be_immutable
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ma_raza_khan/screens/class_room.dart';
-import 'package:ma_raza_khan/screens/create_classroom.dart';
+import 'package:ma_raza_khan/screens/class/join_request.dart';
 import 'package:ma_raza_khan/screens/login_screen.dart';
-import 'package:ma_raza_khan/widgets/my_appdrawer.dart';
-
-import 'class/join_request.dart';
+import '../widgets/my_appdrawer.dart';
+import 'class_room.dart';
+import 'create_classroom.dart';
 
 class HomeScreen extends StatelessWidget {
-  String fullName;
-  String emailId;
-  HomeScreen({super.key, required this.fullName, required this.emailId});
+  final String fullName;
+  final String emailId;
+  final String userId;
+
+  HomeScreen({
+    super.key,
+    required this.fullName,
+    required this.emailId,
+    required this.userId,
+  });
 
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
@@ -40,16 +44,26 @@ class HomeScreen extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            color: Colors.blueGrey[900],
+            color: const Color.fromARGB(255, 1, 96, 144),
             width: double.infinity,
             height: 120,
-            padding: const EdgeInsets.all(16.0),
-            child: const Column(
-              children: [
-                Icon(Icons.task, size: 50, color: Colors.white),
-                SizedBox(height: 8),
-                Text('No upcoming task', style: TextStyle(color: Colors.white)),
-              ],
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            child: const Card.outlined(
+              color: Color.fromARGB(116, 2, 78, 74),
+              borderOnForeground: true,
+              margin: EdgeInsets.all(4.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'No Scheduled Class Available',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           Padding(
@@ -58,7 +72,7 @@ class HomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Your Classrooms',
+                  'Your Classes',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Row(
@@ -69,56 +83,102 @@ class HomeScreen extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        if (loggedInUserType == 'Teacher') {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const CreateClassScreen(),
-                            ),
-                          );
-                        } else {
+                        if (loggedInUserType == 'Student') {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const JoinClassScreen(),
                             ),
                           );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CreateClassScreen(),
+                            ),
+                          );
                         }
                       },
                       icon: const Icon(Icons.add),
-                    )
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: _firebaseFirestore.collection("classes").snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+            child: StreamBuilder<DocumentSnapshot>(
+              stream: _firebaseFirestore
+                  .collection('users')
+                  .doc(userId)
+                  .snapshots(),
+              builder: (context, userSnapshot) {
+                if (userSnapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (snapshot.hasError) {
-                  return const Center(child: Text('Error loading classrooms'));
+                if (userSnapshot.hasError) {
+                  return const Center(child: Text('Error loading user data'));
                 }
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No classrooms available'));
+                if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                  return const Center(child: Text('No user data available'));
                 }
-                return ListView(
-                  children: snapshot.data!.docs.map((doc) {
-                    var data = doc.data() as Map<String, dynamic>;
-                    var classId = doc.id;
-                    return ClassroomCard(
-                      classId: classId,
-                      title: data['className'] ?? 'No Title',
-                      subtitle: data['subject'] ?? 'No Subject',
-                      schedule: 'N/A',
-                      students: 0,
+
+                var userData =
+                    userSnapshot.data!.data() as Map<String, dynamic>;
+
+                Stream<QuerySnapshot> classStream;
+
+                if (loggedInUserType == 'Student') {
+                  debugPrint('Student ID: $userId');
+                  var classIds = List<String>.from(userData['classes'] ?? []);
+                  classStream = _firebaseFirestore
+                      .collection('classes')
+                      .where(FieldPath.documentId,
+                          whereIn: classIds.isNotEmpty ? classIds : ['dummyId'])
+                      .snapshots();
+                } else {
+                  classStream = _firebaseFirestore
+                      .collection('classes')
+                      .where('createdBy', isEqualTo: userId)
+                      .snapshots();
+                }
+
+                return StreamBuilder<QuerySnapshot>(
+                  stream: classStream,
+                  builder: (context, classSnapshot) {
+                    if (classSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (classSnapshot.hasError) {
+                      return const Center(
+                          child: Text('Error loading classrooms'));
+                    }
+
+                    if (!classSnapshot.hasData ||
+                        classSnapshot.data!.docs.isEmpty) {
+                      return const Center(
+                          child: Text('No classrooms available'));
+                    }
+
+                    return ListView(
+                      children: classSnapshot.data!.docs.map((doc) {
+                        var data = doc.data() as Map<String, dynamic>;
+                        var classId = doc.id;
+                        return ClassroomCard(
+                          classId: classId,
+                          title: data['className'] ?? 'No Title',
+                          subtitle: data['subject'] ?? 'No Subject',
+                          teacherName: data['teacherName'] ?? 'No Teacher',
+                          schedule: 'N/A',
+                          students: (data['students'] as List).length,
+                        );
+                      }).toList(),
                     );
-                  }).toList(),
+                  },
                 );
               },
             ),
@@ -133,6 +193,7 @@ class ClassroomCard extends StatelessWidget {
   final String classId;
   final String title;
   final String subtitle;
+  final String teacherName;
   final String schedule;
   final int students;
 
@@ -141,6 +202,7 @@ class ClassroomCard extends StatelessWidget {
     required this.classId,
     required this.title,
     required this.subtitle,
+    required this.teacherName,
     required this.schedule,
     required this.students,
   });
@@ -155,6 +217,8 @@ class ClassroomCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(subtitle),
+            const SizedBox(height: 4),
+            Text('Teacher: $teacherName'),
             const SizedBox(height: 4),
             Row(
               children: [

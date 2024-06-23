@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,15 +15,46 @@ class ApproveRequestsScreen extends StatefulWidget {
 class _ApproveRequestsScreenState extends State<ApproveRequestsScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> _approveRequest(String requestId, String studentName) async {
-    await _firestore.collection('classes').doc(widget.classId).update({
-      'students': FieldValue.arrayUnion([studentName]),
-    });
-    await _firestore.collection('join_requests').doc(requestId).delete();
+  Future<void> _approveRequest(
+      String requestId, String studentName, String email) async {
+    try {
+      // Update the class document
+      await _firestore.collection('classes').doc(widget.classId).update({
+        'students': FieldValue.arrayUnion([
+          {'name': studentName, 'email': email}
+        ]),
+      });
+
+      // Find the user document by email and update it
+      var userSnapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (userSnapshot.docs.isNotEmpty) {
+        var userDoc = userSnapshot.docs.first;
+        await _firestore.collection('users').doc(userDoc.id).update({
+          'classes': FieldValue.arrayUnion([widget.classId]),
+        });
+      }
+
+      await _firestore.collection('join_requests').doc(requestId).delete();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to approve request: $e')),
+      );
+    }
   }
 
   Future<void> _declineRequest(String requestId) async {
-    await _firestore.collection('join_requests').doc(requestId).delete();
+    try {
+      await _firestore.collection('join_requests').doc(requestId).delete();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to decline request: $e')),
+      );
+    }
   }
 
   @override
@@ -41,7 +72,8 @@ class _ApproveRequestsScreenState extends State<ApproveRequestsScreen> {
           }
 
           if (snapshot.hasError) {
-            return const Center(child: Text('Error loading requests'));
+            return Center(
+                child: Text('Error loading requests: ${snapshot.error}'));
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -53,14 +85,17 @@ class _ApproveRequestsScreenState extends State<ApproveRequestsScreen> {
               var data = doc.data() as Map<String, dynamic>;
               var requestId = doc.id;
               var studentName = data['name'] ?? 'No Name';
+              var studentEmail = data['email'] ?? 'No email';
               return ListTile(
                 title: Text(studentName),
+                subtitle: Text(studentEmail),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.check),
-                      onPressed: () => _approveRequest(requestId, studentName),
+                      onPressed: () =>
+                          _approveRequest(requestId, studentName, studentEmail),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),

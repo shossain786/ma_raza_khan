@@ -1,11 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ma_raza_khan/widgets/my_scaffold_msg.dart' as sc;
-import 'package:ma_raza_khan/widgets/project_constants.dart';
+import 'package:ma_raza_khan/screens/login_screen.dart';
+import 'home_screen.dart'; // Ensure you import the HomeScreen if you want to navigate back after creating a class
 
 class CreateClassScreen extends StatefulWidget {
   const CreateClassScreen({super.key});
@@ -15,48 +13,9 @@ class CreateClassScreen extends StatefulWidget {
 }
 
 class _CreateClassScreenState extends State<CreateClassScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _classNameController = TextEditingController();
-  final _subjectNameController = TextEditingController();
-  late String classRoomId;
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-
-  @override
-  void dispose() {
-    _classNameController.dispose();
-    _subjectNameController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _createClassroom() async {
-    String className = _classNameController.text.trim();
-    String subject = _subjectNameController.text.trim();
-    classRoomId = generateRandomClassroomId();
-    if (className.isNotEmpty) {
-      debugPrint('Class Name: $className');
-      debugPrint('Subject Name: $subject');
-
-      await _firebaseFirestore.collection("classes").doc().set(
-          {"className": className, "subject": subject, "classId": classRoomId});
-
-      sc.showSuccessMessage(context,
-          'Class room created sussessfully! Classroom id: $classRoomId');
-
-      _classNameController.clear();
-      _subjectNameController.clear();
-    } else {
-      sc.showUnSuccessMessage(
-          context, 'Class not created. Please virify entered details');
-    }
-  }
-
-  String generateRandomClassroomId() {
-    Random random = Random();
-    int min = 10000000;
-    int max = 99999999;
-    int randomNumber = min + random.nextInt(max - min + 1);
-    return randomNumber.toString();
-  }
+  final TextEditingController _classNameController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -65,56 +24,55 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
         title: const Text('Create Classroom'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Class Name',
-                  border: OutlineInputBorder(),
-                ),
-                controller: _classNameController,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a class name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Subject Name',
-                  border: OutlineInputBorder(),
-                ),
-                controller: _subjectNameController,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter subject name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                height: 40,
-                child: ElevatedButton(
-                  onPressed: _createClassroom,
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: btnForeGroundColor,
-                    backgroundColor: saveBtnBackGrndColor,
-                  ),
-                  child: const Text(
-                    'Save Class',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-            ],
-          ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _classNameController,
+              decoration: const InputDecoration(labelText: 'Class Name'),
+            ),
+            TextField(
+              controller: _subjectController,
+              decoration: const InputDecoration(labelText: 'Subject'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _createClassroom,
+              child: const Text('Create Classroom'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _createClassroom() async {
+    if (_classNameController.text.isEmpty || _subjectController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    String userId = loggedInUserID;
+    String teacherName = loggedInUserFullName;
+
+    await _firestore.collection('classes').add({
+      'className': _classNameController.text,
+      'subject': _subjectController.text,
+      'createdBy': userId,
+      'teacherName': teacherName,
+      'students': [],
+      'joinRequests': [],
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
+          fullName: teacherName,
+          emailId: loggedInUserEmail,
+          userId: userId,
         ),
       ),
     );
