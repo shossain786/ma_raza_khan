@@ -22,168 +22,172 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.chat_bubble),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      drawer: const AppDrawer(),
-      body: Column(
-        children: [
-          Container(
-            color: const Color.fromARGB(255, 1, 96, 144),
-            width: double.infinity,
-            height: 120,
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-            child: const Card.outlined(
-              color: Color.fromARGB(116, 2, 78, 74),
-              borderOnForeground: true,
-              margin: EdgeInsets.all(4.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Dashboard'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.help),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.notifications),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.chat_bubble),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        drawer: const AppDrawer(),
+        body: Column(
+          children: [
+            Container(
+              color: const Color.fromARGB(255, 1, 96, 144),
+              width: double.infinity,
+              height: 120,
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              child: const Card.outlined(
+                color: Color.fromARGB(116, 2, 78, 74),
+                borderOnForeground: true,
+                margin: EdgeInsets.all(4.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'No Scheduled Class Available',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'No Scheduled Class Available',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  )
+                  const Text(
+                    'Your Classes',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.calendar_month),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (loggedInUserType == 'Student') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const JoinClassScreen(),
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const CreateClassScreen(),
+                              ),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.add),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Your Classes',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.calendar_month),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        if (loggedInUserType == 'Student') {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const JoinClassScreen(),
-                            ),
+            Expanded(
+              child: StreamBuilder<DocumentSnapshot>(
+                stream: _firebaseFirestore
+                    .collection('users')
+                    .doc(userId)
+                    .snapshots(),
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (userSnapshot.hasError) {
+                    return const Center(child: Text('Error loading user data'));
+                  }
+
+                  if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                    return const Center(child: Text('No user data available'));
+                  }
+
+                  var userData =
+                      userSnapshot.data!.data() as Map<String, dynamic>;
+
+                  Stream<QuerySnapshot> classStream;
+
+                  if (loggedInUserType == 'Student') {
+                    debugPrint('Student ID: $userId');
+                    var classIds = List<String>.from(userData['classes'] ?? []);
+                    classStream = _firebaseFirestore
+                        .collection('classes')
+                        .where(FieldPath.documentId,
+                            whereIn:
+                                classIds.isNotEmpty ? classIds : ['dummyId'])
+                        .snapshots();
+                  } else {
+                    classStream = _firebaseFirestore
+                        .collection('classes')
+                        .where('createdBy', isEqualTo: userId)
+                        .snapshots();
+                  }
+
+                  return StreamBuilder<QuerySnapshot>(
+                    stream: classStream,
+                    builder: (context, classSnapshot) {
+                      if (classSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      if (classSnapshot.hasError) {
+                        return const Center(
+                            child: Text('Error loading classrooms'));
+                      }
+
+                      if (!classSnapshot.hasData ||
+                          classSnapshot.data!.docs.isEmpty) {
+                        return const Center(
+                            child: Text('No classrooms available'));
+                      }
+
+                      return ListView(
+                        children: classSnapshot.data!.docs.map((doc) {
+                          var data = doc.data() as Map<String, dynamic>;
+                          var classId = doc.id;
+                          return ClassroomCard(
+                            classId: classId,
+                            title: data['className'] ?? 'No Title',
+                            subtitle: data['subject'] ?? 'No Subject',
+                            teacherName: data['teacherName'] ?? 'No Teacher',
+                            schedule: 'N/A',
+                            students: (data['students'] as List).length,
                           );
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const CreateClassScreen(),
-                            ),
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.add),
-                    ),
-                  ],
-                ),
-              ],
+                        }).toList(),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          Expanded(
-            child: StreamBuilder<DocumentSnapshot>(
-              stream: _firebaseFirestore
-                  .collection('users')
-                  .doc(userId)
-                  .snapshots(),
-              builder: (context, userSnapshot) {
-                if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (userSnapshot.hasError) {
-                  return const Center(child: Text('Error loading user data'));
-                }
-
-                if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-                  return const Center(child: Text('No user data available'));
-                }
-
-                var userData =
-                    userSnapshot.data!.data() as Map<String, dynamic>;
-
-                Stream<QuerySnapshot> classStream;
-
-                if (loggedInUserType == 'Student') {
-                  debugPrint('Student ID: $userId');
-                  var classIds = List<String>.from(userData['classes'] ?? []);
-                  classStream = _firebaseFirestore
-                      .collection('classes')
-                      .where(FieldPath.documentId,
-                          whereIn: classIds.isNotEmpty ? classIds : ['dummyId'])
-                      .snapshots();
-                } else {
-                  classStream = _firebaseFirestore
-                      .collection('classes')
-                      .where('createdBy', isEqualTo: userId)
-                      .snapshots();
-                }
-
-                return StreamBuilder<QuerySnapshot>(
-                  stream: classStream,
-                  builder: (context, classSnapshot) {
-                    if (classSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (classSnapshot.hasError) {
-                      return const Center(
-                          child: Text('Error loading classrooms'));
-                    }
-
-                    if (!classSnapshot.hasData ||
-                        classSnapshot.data!.docs.isEmpty) {
-                      return const Center(
-                          child: Text('No classrooms available'));
-                    }
-
-                    return ListView(
-                      children: classSnapshot.data!.docs.map((doc) {
-                        var data = doc.data() as Map<String, dynamic>;
-                        var classId = doc.id;
-                        return ClassroomCard(
-                          classId: classId,
-                          title: data['className'] ?? 'No Title',
-                          subtitle: data['subject'] ?? 'No Subject',
-                          teacherName: data['teacherName'] ?? 'No Teacher',
-                          schedule: 'N/A',
-                          students: (data['students'] as List).length,
-                        );
-                      }).toList(),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
