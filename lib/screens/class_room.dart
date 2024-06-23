@@ -28,11 +28,37 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
   bool topicDone = false;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool isStudent = loggedInUserType == 'Student' ? true : false;
+  late String teacherDesignation = '';
+  late String teacherName = '';
 
   @override
   void initState() {
     studentCount = 31;
+    _fetchTeacherDetails();
     super.initState();
+  }
+
+  Future<void> _fetchTeacherDetails() async {
+    try {
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('classes')
+          .doc(widget.classId)
+          .get();
+      var teacherEmail = querySnapshot.data()?['teachers'][0]['email'];
+      var teacherQuerySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: teacherEmail)
+          .get();
+      if (teacherQuerySnapshot.docs.isNotEmpty) {
+        var teacherData = teacherQuerySnapshot.docs.first.data();
+        setState(() {
+          teacherName = teacherData['full_name'];
+          teacherDesignation = teacherData['designation'];
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching teacher details: $e');
+    }
   }
 
   Future<void> _shareClassroomId() async {
@@ -248,7 +274,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          loggedInUserFullName,
+                          teacherName,
                           style: const TextStyle(
                               fontSize: 20,
                               color: Color.fromARGB(255, 63, 31, 69),
@@ -259,25 +285,11 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                     Row(
                       children: [
                         const Icon(
-                          Icons.info_rounded,
-                          color: Colors.deepOrange,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          loggedInUserType,
-                          style: const TextStyle(
-                              fontSize: 14, color: Colors.deepOrange),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
                           Icons.info_outline,
                           color: Colors.blue,
                         ),
                         const SizedBox(width: 8),
-                        Text(loggedInUserDesignation)
+                        Text(teacherDesignation)
                       ],
                     )
                   ],

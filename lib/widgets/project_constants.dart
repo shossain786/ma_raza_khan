@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Color welcomeScreen1BGColor = const Color(0xFF03A9F4);
+Color welcomeScreen1BGColor = const Color.fromARGB(255, 3, 86, 107);
 Color welcomeScreen2BGColor = const Color.fromARGB(255, 4, 62, 89);
 Color btnForeGroundColor = Colors.white;
 Color saveBtnBackGrndColor = const Color.fromARGB(255, 1, 44, 80);

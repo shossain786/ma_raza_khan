@@ -13,15 +13,14 @@ class JoinClassScreen extends StatefulWidget {
 
 class _JoinClassScreenState extends State<JoinClassScreen> {
   final TextEditingController _classIdController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> _sendJoinRequest() async {
-    if (_classIdController.text.isNotEmpty && _nameController.text.isNotEmpty) {
+    if (_classIdController.text.isNotEmpty) {
       try {
         await _firestore.collection('join_requests').add({
           'classId': _classIdController.text,
-          'name': _nameController.text,
+          'name': loggedInUserFullName,
           'timestamp': FieldValue.serverTimestamp(),
           'email': loggedInUserEmail,
         });
@@ -51,10 +50,6 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
             TextField(
               controller: _classIdController,
               decoration: const InputDecoration(labelText: 'Classroom ID'),
-            ),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Your Name'),
             ),
             const SizedBox(height: 16),
             ElevatedButton(

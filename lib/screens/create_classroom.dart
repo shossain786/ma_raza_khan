@@ -56,12 +56,15 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
 
     String userId = loggedInUserID;
     String teacherName = loggedInUserFullName;
+    String emailId = loggedInUserEmail; // Assuming this is available
 
     await _firestore.collection('classes').add({
       'className': _classNameController.text,
       'subject': _subjectController.text,
       'createdBy': userId,
-      'teacherName': teacherName,
+      'teachers': [
+        {'name': teacherName, 'email': emailId}
+      ],
       'students': [],
       'joinRequests': [],
     });
@@ -71,7 +74,7 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
       MaterialPageRoute(
         builder: (context) => HomeScreen(
           fullName: teacherName,
-          emailId: loggedInUserEmail,
+          emailId: emailId,
           userId: userId,
         ),
       ),
