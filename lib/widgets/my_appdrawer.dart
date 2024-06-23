@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ma_raza_khan/screens/profile/user_profile.dart';
 import 'package:ma_raza_khan/widgets/project_constants.dart';
 import '../screens/login_screen.dart';
 
@@ -28,7 +29,7 @@ class AppDrawer extends StatelessWidget {
               child: Icon(Icons.mosque),
             ),
             decoration: BoxDecoration(
-              color: welcomeScreen2BGColor, // Update the background color
+              color: welcomeScreen2BGColor,
             ),
           ),
           ListTileTheme(
@@ -49,7 +50,12 @@ class AppDrawer extends StatelessWidget {
                     leading: const Icon(Icons.info),
                     title: const Text('Profile'),
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ),
+                      );
                     },
                   ),
                   ListTile(

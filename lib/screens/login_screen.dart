@@ -7,6 +7,12 @@ import 'package:ma_raza_khan/screens/home_screen.dart';
 import 'package:ma_raza_khan/screens/sign_up.dart';
 import 'package:ma_raza_khan/widgets/my_scaffold_msg.dart';
 
+late String loggedInUserType;
+late String loggedInUserFullName;
+late String loggedInUserEmail;
+late String loggedInUserID;
+late String loggedInUserDesignation;
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -38,6 +44,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (userRole == _selectedRole) {
         debugPrint("Logged in as $_selectedRole");
+        loggedInUserType = userRole;
+        loggedInUserEmail = email;
+        loggedInUserID = userCredential.user!.uid;
+        try {
+          loggedInUserDesignation = userDoc['designation'] ?? 'No designation';
+        } catch (e) {
+          loggedInUserDesignation = 'Student';
+        }
+
+        loggedInUserFullName = fullName;
 
         Navigator.push(
           context,

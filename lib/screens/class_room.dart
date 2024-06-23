@@ -1,14 +1,18 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:ma_raza_khan/screens/login_screen.dart';
 import 'package:ma_raza_khan/widgets/class_top_items.dart';
 
 import '../widgets/project_constants.dart' as pc;
 
 class ClassroomScreen extends StatefulWidget {
   final String classId;
-  const ClassroomScreen({super.key, required this.classId});
+  final String className;
+  const ClassroomScreen({
+    super.key,
+    required this.classId,
+    required this.className,
+  });
 
   @override
   State<ClassroomScreen> createState() => _ClassroomScreenState();
@@ -29,7 +33,9 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
 
   Future<void> _deleteClassroom() async {
     await _firestore.collection('classes').doc(widget.classId).delete();
-    Navigator.pop(context);
+    if (mounted) {
+      Navigator.pop(context);
+    }
   }
 
   Future<void> _archiveClassroom() async {}
@@ -40,7 +46,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Class Room'),
+        title: Text(widget.className),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -168,7 +174,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Lessons',
+                    'About Me',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -176,35 +182,21 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Column(
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.person,
-                          color: Colors.deepOrange,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Class Teacher',
-                          style:
-                              TextStyle(fontSize: 14, color: Colors.deepOrange),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.info_rounded,
                           color: Colors.blue,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Saddam Hossain',
-                          style: TextStyle(
-                              fontSize: 14,
+                          loggedInUserFullName,
+                          style: const TextStyle(
+                              fontSize: 20,
                               color: Color.fromARGB(255, 63, 31, 69),
                               fontWeight: FontWeight.bold),
                         ),
@@ -212,12 +204,26 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                     ),
                     Row(
                       children: [
-                        Icon(
-                          Icons.more_rounded,
+                        const Icon(
+                          Icons.info_rounded,
+                          color: Colors.deepOrange,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          loggedInUserType,
+                          style: const TextStyle(
+                              fontSize: 14, color: Colors.deepOrange),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
                           color: Colors.blue,
                         ),
-                        SizedBox(width: 8),
-                        Text('Software Developer, E2OPEN')
+                        const SizedBox(width: 8),
+                        Text(loggedInUserDesignation)
                       ],
                     )
                   ],
@@ -236,8 +242,6 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
-                    // color: Color.fromARGB(255, 169, 223, 253),
-                    // color:
                     gradient: LinearGradient(
                       colors: [
                         Color.fromARGB(255, 47, 159, 187),

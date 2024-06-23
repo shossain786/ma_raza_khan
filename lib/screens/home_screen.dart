@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Classrooms'),
+        title: const Text('Dashboard'),
         actions: [
           IconButton(
             icon: const Icon(Icons.help),
@@ -172,7 +172,8 @@ class ClassroomCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ClassroomScreen(classId: classId),
+              builder: (context) =>
+                  ClassroomScreen(classId: classId, className: title),
             ),
           );
         },
