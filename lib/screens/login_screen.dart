@@ -32,6 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isAuthenticating = false;
 
   Future<void> _login() async {
+    setState(() {
+      _isAuthenticating = true;
+    });
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _usernameController.text,
@@ -58,9 +61,6 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         loggedInUserFullName = fullName;
-        setState(() {
-          _isAuthenticating = true;
-        });
 
         Navigator.push(
           context,
@@ -77,6 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
             context, 'You do not have access as role: $_selectedRole');
         await _auth.signOut();
       }
+      setState(() {
+        _isAuthenticating = false;
+      });
     } on FirebaseAuthException catch (error) {
       showUnSuccessMessage(context, error.email ?? 'Authentication failed!!');
     }
