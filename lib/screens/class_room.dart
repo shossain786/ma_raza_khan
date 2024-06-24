@@ -7,7 +7,9 @@ import 'package:ma_raza_khan/screens/login_screen.dart';
 import 'package:ma_raza_khan/widgets/class_top_items.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../services/firestore_service.dart';
 import '../widgets/project_constants.dart' as pc;
+import '../widgets/project_constants.dart';
 import 'class/approve_request.dart';
 
 class ClassroomScreen extends StatefulWidget {
@@ -30,6 +32,7 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
   bool isStudent = loggedInUserType == 'Student' ? true : false;
   late String teacherDesignation = '';
   late String teacherName = '';
+  final FirestoreService _firestoreService = FirestoreService();
 
   @override
   void initState() {
@@ -304,37 +307,92 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
             builder: (BuildContext context, ScrollController scrollController) {
               return Container(
                 decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 47, 159, 187),
-                        Color.fromARGB(169, 172, 88, 88),
-                        Color.fromARGB(115, 136, 91, 91),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(214, 188, 199, 101),
+                      Color.fromARGB(115, 136, 91, 91),
+                    ],
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        const Text(
+                          'Class Topics',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        TextButton(
+                          onPressed: _showAddTopicDialog,
+                          child: const Text(' + Add Topic'),
+                        ),
                       ],
-                    )),
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: 25,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      iconColor: const Color.fromARGB(255, 6, 83, 146),
-                      selectedTileColor: Colors.amber,
-                      title: Text('Item $index'),
-                      leading: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            topicDone = !topicDone;
-                          });
+                    ),
+                    const Divider(
+                      color: Colors.black38,
+                    ),
+                    Expanded(
+                      child: StreamBuilder<List<Topic>>(
+                        stream: _firestoreService.getTopics(widget.classId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return const Center(
+                                child: Text('No topics available'));
+                          }
+                          final topics = snapshot.data!;
+                          return ListView.builder(
+                            controller: scrollController,
+                            itemCount: topics.length,
+                            itemBuilder: (context, index) {
+                              final topic = topics[index];
+                              return Ink(
+                                // color: Colors.blue,
+                                child: ListTile(
+                                  title: Text(
+                                    topic.title,
+                                    style: TextStyle(
+                                      color: topic.isCompleted
+                                          ? topicCompletedColor
+                                          : topicNotCompletedColor,
+                                      decoration: topic.isCompleted
+                                          ? TextDecoration.lineThrough
+                                          : TextDecoration.none,
+                                    ),
+                                  ),
+                                  leading: IconButton(
+                                    onPressed: () {
+                                      _firestoreService
+                                          .updateTopicCompletionStatus(
+                                        widget.classId,
+                                        topic.title,
+                                        !topic.isCompleted,
+                                      );
+                                    },
+                                    icon: topic.isCompleted
+                                        ? Icon(Icons.check_box,
+                                            color: topicCompletedColor)
+                                        : Icon(Icons.check_box_outline_blank,
+                                            color: topicNotCompletedColor),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
                         },
-                        icon: topicDone
-                            ? const Icon(Icons.check_box)
-                            : const Icon(Icons.check_box_outline_blank_rounded),
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
               );
             },
@@ -347,6 +405,44 @@ class _ClassroomScreenState extends State<ClassroomScreen> {
         icon: const Icon(Icons.live_tv_rounded),
         backgroundColor: Colors.orange,
       ),
+    );
+  }
+
+  void _showAddTopicDialog() {
+    final TextEditingController controller = TextEditingController();
+    FirestoreService firestoreService = FirestoreService();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add Topic'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(hintText: 'Enter topic title'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final title = controller.text;
+                if (title.isNotEmpty) {
+                  final newTopic = Topic(
+                    title: title,
+                  );
+                  firestoreService.addTopic(widget.classId, newTopic);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

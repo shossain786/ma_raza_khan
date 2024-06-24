@@ -138,7 +138,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       backgroundColor: Colors.blue,
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: const Text('SIGN UP'),
+                    child: const Text('SIGN UP',
+                        style: TextStyle(color: Colors.white, fontSize: 20)),
                   ),
                   const SizedBox(height: 10),
                   TextButton(

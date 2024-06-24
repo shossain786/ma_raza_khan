@@ -190,7 +190,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         backgroundColor: Colors.blue,
                         minimumSize: const Size(double.infinity, 50),
                       ),
-                      child: const Text('LOGIN'),
+                      child: const Text(
+                        'LOGIN',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
                     ),
                   const SizedBox(height: 10),
                   TextButton(
